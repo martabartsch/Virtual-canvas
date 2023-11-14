@@ -1,0 +1,10 @@
+
+# local files, cache
+*.pyc
+*.ini
+*.env
+
+# local directories
+/backend/venv
+/backend/data
+.idea
