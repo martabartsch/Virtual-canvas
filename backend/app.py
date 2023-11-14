@@ -18,11 +18,11 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     if request.method == 'POST':
-        email = request.form.get('email')
+        username = request.form.get('username')
         password = request.form.get('password')
-        result = user_db.login_user(email, password)
+        result = user_db.login_user(username, password)
         if result is False:
-            return render_template('login.html', error='Email or password is incorrect')
+            return render_template('login.html', error='Username or password is incorrect')
         else:
             return render_template('home.html')
     return render_template('login.html')
@@ -31,9 +31,10 @@ def login_user():
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
     if request.method == 'POST':
+        username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        result = user_db.register_user(email, password)
+        result = user_db.register_user(username, email, password)
         print(result)
         if result == 'ERROR':
             return render_template('register.html', error='Email already exists')

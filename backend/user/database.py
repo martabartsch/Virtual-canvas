@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from flask import session
-import os
 
 dotenv_path = '/Users/marta/virtual-canvas/.env'
 load_dotenv(dotenv_path)
@@ -25,17 +24,18 @@ class UserDatabase:
         else:
             return 0
 
-    def register_user(self, email, password):
+    def register_user(self, username, email, password):
         max_id = self.get_max_user_id()
         print(type(max_id))
         id_user = int(max_id) + 1
 
-        user_exist = self.collection.find_one({"email": email})
+        user_exist = self.collection.find_one({"username": username, "email": email})
         if user_exist:
             return 'ERROR'
         else:
             user_data = {
                 '_id': str(id_user),
+                'username': username,
                 'email': email,
                 'password': password,
             }
@@ -43,11 +43,11 @@ class UserDatabase:
         result = self.collection.insert_one(user_data)
         return result.inserted_id
 
-    def login_user(self, email, password):
-        user_exist = self.collection.find_one({"email": email, "password": password})
+    def login_user(self, username, password):
+        user_exist = self.collection.find_one({"username": username, "password": password})
         if user_exist:
             session['user_id'] = str(user_exist['_id'])
-            session['email'] = user_exist['email']
+            session['username'] = user_exist['username']
             return True
         else:
             return False
