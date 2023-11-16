@@ -12,7 +12,7 @@ user_db = UserDatabase()
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('canvas_base.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
