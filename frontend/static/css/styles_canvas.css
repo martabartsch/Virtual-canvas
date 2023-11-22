@@ -16,22 +16,33 @@ section {
     flex: 1;
     border-radius: 10px;
 }
+
 img{
     width: 30px;
 
 }
-.tools-board{
+
+.tools-board {
     display: flex;
-    text-align: justify;
-    text-size-adjust: auto;
+    flex-direction: column;
     padding: 15px;
 }
 
-.row .options{
-    list-style: None;
+.row .options {
+    list-style: none;
+    margin: 5px 0;
 }
 
 .drawing-board canvas{
     width: 100%;
     height: 100%;
+}
+
+#button {
+    border-radius: 50%;
+}
+
+#color {
+    width: 30px;
+    height: 30px;
 }
