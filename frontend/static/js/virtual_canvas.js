@@ -1,15 +1,14 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
-let lastX;
-let lastY;
+let startX;
+let startY;
 let snapshot;
-let selectedTool = 'Pen'; // Początkowo ustawione na 'Pen'
+let selectedTool = 'Pen';
 colorInput = document.getElementById('color');
-console.log(colorInput);
 
 // Początkowa grubość linii
-let lineWidth = 10;
+let lineWidth = 8;
 
 window.addEventListener("load", () => {
     canvas.width = canvas.offsetWidth;
@@ -28,7 +27,7 @@ window.addEventListener("load", () => {
             isDrawing = false;
 
             // Aktywuj rysowanie w zależności od wybranego narzędzia
-            if (selectedTool === 'Pen' || selectedTool === 'Erase' || selectedTool === 'Circle'|| selectedTool === 'Point'|| selectedTool === 'Rectangle') {
+            if (selectedTool === 'Pen' || selectedTool === 'Erase' || selectedTool === 'Circle'|| selectedTool === 'Point'|| selectedTool === 'Rectangle' || selectedTool === 'Line' || selectedTool === 'Arrow') {
                 canvas.addEventListener("mousedown", startDrawing);
                 canvas.addEventListener("mousemove", draw);
                 canvas.addEventListener("mouseup", stopDrawing);
@@ -51,32 +50,55 @@ window.addEventListener("load", () => {
 
 const startDrawing = (e) => {
     isDrawing = true;
-    [lastX, lastY] = [e.offsetX, e.offsetY];
+    [startX, startY] = [e.offsetX, e.offsetY];
     ctx.beginPath();
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = colorInput.value;
     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 };
-
 const drawCircle = (e) => {
     ctx.beginPath()
-    ctx.moveTo(lastX, lastY + (e.offsetY - lastY) / 2);
-    ctx.bezierCurveTo(lastX, lastY, e.offsetX, lastY, e.offsetX, lastY + (e.offsetY - lastY) / 2);
-    ctx.bezierCurveTo(e.offsetX, e.offsetY, lastX, e.offsetY, lastX, lastY + (e.offsetY - lastY) / 2);
+    ctx.moveTo(startX, startY + (e.offsetY - startY) / 2);
+    ctx.bezierCurveTo(startX, startY, e.offsetX, startY, e.offsetX, startY + (e.offsetY - startY) / 2);
+    ctx.bezierCurveTo(e.offsetX, e.offsetY, startX, e.offsetY, startX, startY + (e.offsetY - startY) / 2);
     ctx.stroke();
 };
 
 const drawPoint = (e) => {
     ctx.beginPath();
-    let radius = Math.sqrt(Math.pow((lastX - e.offsetX), 2)+ Math.pow((lastY - e.offsetY), 2));
-    ctx.arc(lastX, lastY, radius, 0, 2*Math.PI);
+    let radius = Math.sqrt(Math.pow((startX - e.offsetX), 2)+ Math.pow((startY - e.offsetY), 2));
+    ctx.arc(startX, startY, radius, 0, 2*Math.PI);
     ctx.fill();
     ctx.stroke();
 };
 
 const drawRectangle = (e) => {
     ctx.beginPath();
-    ctx.strokeRect(lastX, lastY, e.offsetX- lastX, e.offsetY- lastY);
+    ctx.strokeRect(startX, startY, e.offsetX- startX, e.offsetY- startY);
+};
+
+const drawArrow = (e) => {
+    // Draw line
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+
+    // Draw arrow
+    const angle = Math.atan2(e.offsetY - startY, e.offsetX - startX);
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX - lineWidth * Math.cos(angle - Math.PI / 4), e.offsetY - lineWidth * Math.sin(angle - Math.PI / 4));
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.lineTo(e.offsetX- lineWidth * Math.cos(angle + Math.PI / 4), e.offsetY - lineWidth * Math.sin(angle + Math.PI / 4));
+    ctx.closePath();
+    ctx.stroke();
+};
+
+const drawLine = (e) => {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
 };
 
 const draw = (e) => {
@@ -84,23 +106,27 @@ const draw = (e) => {
     ctx.putImageData(snapshot, 0, 0);
 
     if (selectedTool === 'Pen') {
-        ctx.moveTo(lastX, lastY);
+        ctx.moveTo(startX, startY);
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        [startX, startY] = [e.offsetX, e.offsetY];
     } else if (selectedTool === 'Erase') {
-        ctx.moveTo(lastX, lastY);
+        ctx.moveTo(startX, startY);
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.globalCompositeOperation = 'destination-out'; // Ustawienie gumki
         ctx.stroke();
         ctx.globalCompositeOperation = 'source-over'; // Przywrócenie normalnego trybu mieszania
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        [startX, startY] = [e.offsetX, e.offsetY];
     } else if (selectedTool === 'Point') {
         drawPoint(e);
     } else if (selectedTool === 'Circle') {
         drawCircle(e);
     } else if (selectedTool === 'Rectangle') {
         drawRectangle(e);
+    } else if (selectedTool === 'Line') {
+        drawLine(e);
+    } else if(selectedTool === 'Arrow') {
+        drawArrow(e);
     }
 
 };
