@@ -5,6 +5,7 @@ let startX;
 let startY;
 let snapshot;
 let selectedTool = 'Pen';
+let fillColorCheckbox;
 colorInput = document.getElementById('color');
 
 // Początkowa grubość linii
@@ -16,6 +17,15 @@ window.addEventListener("load", () => {
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     ctx.lineWidth = lineWidth; // Ustawienie początkowej grubości linii
+    fillColorCheckbox = document.getElementById("fill-color");
+
+    fillColorCheckbox.addEventListener("change", () => {
+        if (fillColorCheckbox.checked) {
+            ctx.fillStyle = colorInput.value;
+        } else {
+            ctx.fillStyle = 'transparent';
+        }
+    });
 
     // Obsługa zmiany narzędzia
     const toolOptions = document.querySelectorAll('.tools-board .options .option');
@@ -46,6 +56,7 @@ window.addEventListener("load", () => {
         lineWidth = parseInt(lineWidthSlider.value);
         ctx.lineWidth = lineWidth; // Ustawienie aktualnej grubości linii
     });
+
 });
 
 const startDrawing = (e) => {
@@ -61,20 +72,26 @@ const drawCircle = (e) => {
     ctx.moveTo(startX, startY + (e.offsetY - startY) / 2);
     ctx.bezierCurveTo(startX, startY, e.offsetX, startY, e.offsetX, startY + (e.offsetY - startY) / 2);
     ctx.bezierCurveTo(e.offsetX, e.offsetY, startX, e.offsetY, startX, startY + (e.offsetY - startY) / 2);
+    ctx.fillStyle = fillColorCheckbox.checked ? colorInput.value : 'transparent';
     ctx.stroke();
+    ctx.fill();
 };
 
 const drawPoint = (e) => {
     ctx.beginPath();
     let radius = Math.sqrt(Math.pow((startX - e.offsetX), 2)+ Math.pow((startY - e.offsetY), 2));
     ctx.arc(startX, startY, radius, 0, 2*Math.PI);
-    ctx.fill();
+    ctx.fillStyle = fillColorCheckbox.checked ? colorInput.value : 'transparent';
     ctx.stroke();
+    ctx.fill();
 };
 
 const drawRectangle = (e) => {
     ctx.beginPath();
     ctx.strokeRect(startX, startY, e.offsetX- startX, e.offsetY- startY);
+    ctx.fillStyle = fillColorCheckbox.checked ? colorInput.value : 'transparent';
+    ctx.stroke();
+    ctx.fillRect(startX, startY, e.offsetX- startX, e.offsetY- startY);
 };
 
 const drawArrow = (e) => {
