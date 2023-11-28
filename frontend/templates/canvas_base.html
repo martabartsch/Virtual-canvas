@@ -8,6 +8,14 @@
     <title>Virtual Canvas</title>
 </head>
 <body>
+    <div class="top-bar">
+        <div>
+            <span>Virtual Canvas</span>
+        </div>
+        <div>
+            <button id="logout-button">Log Out</button>
+        </div>
+    </div>
     <div class="container">
         <section class="tools-board">
             <div class="row">
@@ -37,10 +45,6 @@
                         <img src="../static/img/canvas_text.png" alt="">
                         <span>Text</span>
                     </li>
-                    <li class="option" data-tool="Image">
-                        <img src="../static/img/canvas_image.png" alt="">
-                        <span>Image</span>
-                    </li>
                     <li class="option" data-tool="Fill color">
                         <input type="checkbox" id="fill-color">
                         <label for="fill-color">Fill color</label>
@@ -67,6 +71,10 @@
                         <input type="color" id="color" value="Color">
                     </li>
                 </ul>
+                <div class="button-container">
+                    <button class="save-button">Save</button>
+                    <button class="clear-button">Clear</button>
+                </div>
             </div>
         </section>
         <section class="drawing-board">
