@@ -48,6 +48,18 @@ class UserDatabase:
         if user_exist:
             session['user_id'] = str(user_exist['_id'])
             session['username'] = user_exist['username']
-            return True
+            return True, session
         else:
             return False
+
+    def get_user_by_id(self, user_id):
+        user_data = self.collection.find_one({"_id": user_id})
+        if user_data:
+            return {
+                "_id": str(user_data['_id']),
+                "username": user_data['username'],
+                "email": user_data['email'],
+                "password": user_data['password']
+            }
+        else:
+            return None
