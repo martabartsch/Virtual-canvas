@@ -14,6 +14,7 @@
         </div>
         <div>
             <button id="logout-button">Log Out</button>
+            <button id="show-column-button">&#9776;</button>
         </div>
     </div>
     <div class="container">
@@ -81,5 +82,26 @@
             <canvas></canvas>
         </section>
     </div>
+    <!-- Side Column -->
+    <div id="side-column" class="side-column">
+        <!-- Content for the side column -->
+        <!-- You can customize this section based on your requirements -->
+        Side Column Content
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sideColumn = document.getElementById("side-column");
+            const showColumnButton = document.getElementById("show-column-button");
+
+            showColumnButton.addEventListener("click", function () {
+                if (sideColumn.style.display === "none" || sideColumn.style.display === "") {
+                    sideColumn.style.display = "block";
+                } else {
+                    sideColumn.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
