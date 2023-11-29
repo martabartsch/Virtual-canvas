@@ -7,4 +7,5 @@
 # local directories
 /backend/venv
 /backend/data
+venv/
 .idea
