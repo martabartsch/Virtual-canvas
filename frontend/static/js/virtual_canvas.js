@@ -191,6 +191,5 @@ let lineWidth = 8;
     };
 
     document.getElementById("logout-button").addEventListener("click", function() {
-            // Tutaj dodaj kod do przekierowania do ścieżki wylogowania
-            window.location.href = "/logout"; // Zmień "/logout" na odpowiednią ścieżkę
+            window.location.href = "/logout";
         });
