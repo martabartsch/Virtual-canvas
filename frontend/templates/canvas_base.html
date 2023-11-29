@@ -74,6 +74,7 @@
                 </ul>
                 <div class="button-container">
                     <button class="save-button">Save</button>
+                    <button class="save-draft-button">Save on Draft</button>
                     <button class="clear-button">Clear</button>
                 </div>
             </div>
@@ -82,26 +83,5 @@
             <canvas></canvas>
         </section>
     </div>
-    <!-- Side Column -->
-    <div id="side-column" class="side-column">
-        <!-- Content for the side column -->
-        <!-- You can customize this section based on your requirements -->
-        Side Column Content
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const sideColumn = document.getElementById("side-column");
-            const showColumnButton = document.getElementById("show-column-button");
-
-            showColumnButton.addEventListener("click", function () {
-                if (sideColumn.style.display === "none" || sideColumn.style.display === "") {
-                    sideColumn.style.display = "block";
-                } else {
-                    sideColumn.style.display = "none";
-                }
-            });
-        });
-    </script>
 </body>
 </html>

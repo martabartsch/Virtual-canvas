@@ -91,6 +91,22 @@ img{
     margin-bottom: 10px;
 }
 
+.save-draft-button {
+    background-color: #854ad0;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 19px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.save-draft-button:hover{
+    background-color: #854ad0;
+}
 .save-button:hover{
     background-color: #1E88E5;
 }
@@ -100,6 +116,7 @@ img{
 }
 
 .save-button:active,
+.save-draft-button,
 .clear-button:active {
     position: relative;
     top: 1px;

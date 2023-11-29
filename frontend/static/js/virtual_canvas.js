@@ -1,19 +1,17 @@
-    const canvas = document.querySelector('canvas');
-    const ctx = canvas.getContext('2d');
-    let isDrawing = false;
-    let startX;
-    let startY;
-    let snapshot;
-    let selectedTool = 'Pen';
-    let fillColorCheckbox;
-    colorInput = document.getElementById('color');
-    saveButton = document.querySelector('.save-button');
-    clearButton = document.querySelector('.clear-button');
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+let startX;
+let startY;
+let snapshot;
+let selectedTool = 'Pen';
+let fillColorCheckbox;
+colorInput = document.getElementById('color');
+saveButton = document.querySelector('.save-button');
+clearButton = document.querySelector('.clear-button');
+let lineWidth = 8;
 
-    // Początkowa grubość linii
-    let lineWidth = 8;
-
-        // Funkcja do zapisywania danych canvasa w LocalStorage
+    // Funkcja do zapisywania danych canvasa w LocalStorage
     const saveCanvasDataToLocal = () => {
         const currentCanvasData = canvas.toDataURL();
         localStorage.setItem('canvasData', currentCanvasData);
@@ -189,7 +187,7 @@
 
     const stopDrawing = () => {
         isDrawing = false;
-        updateCanvasData();
+        saveCanvasDataToLocal();
     };
 
     document.getElementById("logout-button").addEventListener("click", function() {
