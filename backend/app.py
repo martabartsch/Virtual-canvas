@@ -30,7 +30,6 @@ def load_user(user_id):
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
-        print(session)
         if 'user_id' in request.cookies:
             return test(*args, **kwargs)
         else:
@@ -80,10 +79,10 @@ def login_user():
 @app.route('/logout')
 @login_required
 def logout():
+    logout_user()
     # Wyczyść sesję Flask i dane specyficzne dla użytkownika
     session.pop('user_id', None)
     session.pop('username', None)
-    logout_user()
 
     return redirect(url_for('login_user'))
 
