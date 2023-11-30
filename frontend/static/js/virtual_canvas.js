@@ -6,10 +6,85 @@ let startY;
 let snapshot;
 let selectedTool = 'Pen';
 let fillColorCheckbox;
+const showColumnButton = document.getElementById('show-column-button');
+const canvasListSection = document.querySelector('.side-column');
 colorInput = document.getElementById('color');
 saveButton = document.querySelector('.save-button');
+saveDraftButton = document.querySelector('.save-draft-button');
 clearButton = document.querySelector('.clear-button');
 let lineWidth = 8;
+const canvasListContainer = document.getElementById('canvas-list-container');
+
+    const displayCanvasList = () => {
+        // Pobierz wszystkie zapisane płótna z LocalStorage
+        const savedCanvases = Object.keys(localStorage).filter(key => key.startsWith('canvasData_'));
+        console.log(savedCanvases)
+        // Wyświetl listę płócienek
+        canvasListContainer.innerHTML = '';
+        savedCanvases.forEach((canvasKey, index) => {
+        const canvasItem = document.createElement('li');
+        const canvasName = localStorage.getItem(`canvasName_${canvasKey}`);
+        canvasItem.textContent = `${canvasName || 'Unknown'}`;
+
+        // Dodaj przycisk usuwania
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'delete-icon';
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Zatrzymaj propagację, aby nie wywołać zdarzenia na całej liście
+            deleteCanvas(canvasKey);
+            displayCanvasList(); // Aktualizuj listę płócienek po usunięciu
+        });
+
+        canvasItem.appendChild(deleteButton);
+
+        // Dodaj zdarzenie kliknięcia na całą pozycję na liście
+        canvasItem.addEventListener('click', () => loadCanvasFromLocalStorage(canvasKey));
+        canvasListContainer.appendChild(canvasItem);
+    });
+    };
+
+
+    // Funkcja do ładowania zapisanego canvasa z LocalStorage
+    const loadCanvasFromLocalStorage = (canvasKey) => {
+        const savedCanvasData = localStorage.getItem(canvasKey);
+        if (savedCanvasData) {
+            const img = new Image();
+            img.onload = function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = savedCanvasData;
+        }
+    };
+
+    // Funkcja do usuwania danych canvasa z LocalStorage i z listy
+    const deleteCanvas = (canvasKey) => {
+        const confirmDelete = confirm('Are you sure you want to delete this canvas?');
+
+        if (confirmDelete) {
+            localStorage.removeItem(canvasKey);
+            localStorage.removeItem(`canvasName_${canvasKey}`);
+            displayCanvasList(); // Aktualizuj listę płócienek po usunięciu
+        }
+    };
+
+    // Funkcja do zapisywania danych canvasa w LocalStorage
+    const saveCanvasDataSaveOnDraft = () => {
+         const currentCanvasData = canvas.toDataURL();
+        const canvasKey = `canvasData_${new Date().getTime()}`;
+
+        let canvasName = prompt('Enter canvas name:');
+
+        // Sprawdź, czy użytkownik anulował wprowadzenie
+        if (canvasName === null) {
+            canvasName = 'Unknown'; // Ustaw domyślną nazwę
+        }
+
+        localStorage.setItem(canvasKey, currentCanvasData);
+        localStorage.setItem(`canvasName_${canvasKey}`, canvasName);
+        displayCanvasList(); // Aktualizuj listę płócienek po zapisie
+    };
 
     // Funkcja do zapisywania danych canvasa w LocalStorage
     const saveCanvasDataToLocal = () => {
@@ -29,6 +104,10 @@ let lineWidth = 8;
             img.src = savedCanvasData;
         }
     };
+    showColumnButton.addEventListener('click', () => {
+        canvasListSection.classList.toggle('show');
+        displayCanvasList();
+    });
     window.addEventListener("load", () => {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
@@ -43,7 +122,6 @@ let lineWidth = 8;
                 ctx.fillStyle = 'transparent';
             }
         });
-
         restoreCanvasDataFromLocal();
         // Funkcja do zapisywania obrazu
         const saveCanvas = () => {
@@ -54,12 +132,18 @@ let lineWidth = 8;
             a.click();
         };
 
-        // Funkcja do czyszczenia całego obszaru rysunku
         const clearCanvas = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveCanvasDataToLocal();
+        };
+
+        // Funkcja do czyszczenia całego obszaru rysunku
+        const saveDraftCanvas = () => {
+            saveCanvasDataSaveOnDraft();
         };
 
         saveButton.addEventListener('click', saveCanvas);
+        saveDraftButton.addEventListener('click', saveDraftCanvas);
         clearButton.addEventListener('click', clearCanvas);
 
         // Obsługa zmiany narzędzia

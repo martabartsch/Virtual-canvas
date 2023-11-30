@@ -30,11 +30,13 @@ img{
     display: flex;
     flex-direction: column;
     padding: 50px;
+
 }
 
 .row .options {
     list-style: none;
     margin: 5px 0;
+    padding: 10px 15px;
 }
 
 .drawing-board canvas{
@@ -61,7 +63,7 @@ img{
 .button-container {
     display: flex;
     flex-direction: column;
-    margin-top: 10px; /* Add margin at the top if needed */
+    margin-top: 10px;
 }
 
 .clear-button {
@@ -104,6 +106,20 @@ img{
     border-radius: 5px;
     margin-bottom: 10px;
 }
+
+.delete-button {
+    background-color: #da0d0d;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 19px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 .save-draft-button:hover{
     background-color: #854ad0;
 }
@@ -115,7 +131,12 @@ img{
     background-color: #e58e37;
 }
 
+.delete-button:hover {
+    background-color: #da0d0d;
+}
+
 .save-button:active,
+.delete-button:active,
 .save-draft-button,
 .clear-button:active {
     position: relative;
@@ -136,7 +157,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000; /* Upewnij się, że pasek będzie na wierzchu innych elementów */
+    z-index: 1000;
 }
 
 .top-bar button {
@@ -156,8 +177,53 @@ body {
     background-color: #f1f1f1;
     position: fixed;
     top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+    margin-top: 50px;
+    right: -200px;
+    transition: right 0.3s ease;
+}
+
+
+.side-column.show {
+    display: block;
+    width: 200px;
+    height: 100%;
+    background-color: #5b5858;
+    position: fixed;
+    top: 0;
     right: 0;
     overflow-x: hidden;
     padding-top: 20px;
+    margin-top: 50px;
+    transition: margin-right 2.0s ease;
 }
+
+.side-column h2 {
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 19px;
+    text-align: center;
+}
+
+.delete-icon {
+    cursor: pointer;
+    top: 50%;
+    margin-right: 6100px;
+    color: #e10d0d;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+
+.delete-icon:hover {
+    color: #e10d0d;
+}
+
+.side-column ul {
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 17px;
+}
+
 
