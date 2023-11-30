@@ -16,6 +16,7 @@ class UserDatabase:
         self.client = MongoClient(self.url)
         self.db = self.client['users_database']
         self.collection = self.db['users']
+        self.canvas_collection = self.db['canvas_data']
 
     def get_max_user_id(self):
         max_id = self.collection.find_one(sort=[('_id', -1)])
@@ -63,3 +64,23 @@ class UserDatabase:
             }
         else:
             return None
+
+    def save_canvas_data(self, user_id, canvas_data):
+
+        data = {
+            'user_id': user_id,
+            'canvas_data': canvas_data,
+        }
+        result = self.canvas_collection.insert_one(data)
+        return result.inserted_id
+
+    def get_canvas_data_by_user_id(self, user_id):
+        try:
+            empty_canvas_data_records = self.canvas_collection.find({'canvas_data': None})
+            # Usuń te rekordy
+            for record in empty_canvas_data_records:
+                self.canvas_collection.delete_one({'_id': record['_id']})
+        except Exception as e:
+            print('Nie trzeba usuwac')
+        cursor = self.canvas_collection.find({'user_id': user_id})
+        return [doc for doc in cursor]

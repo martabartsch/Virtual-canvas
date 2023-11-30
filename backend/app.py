@@ -1,7 +1,7 @@
 from datetime import timedelta
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, UserMixin
 from user.database import UserDatabase
 from dotenv import load_dotenv
@@ -85,6 +85,43 @@ def logout():
     session.pop('username', None)
 
     return redirect(url_for('login_user'))
+
+
+@app.route('/save-canvas-data', methods=['POST'])
+def save_canvas_data():
+    try:
+        data = request.json
+        canvas_data = data.get('canvasData')
+        print(canvas_data)
+
+        if 'user_id' in session:
+            user_id = session['user_id']
+            user_db.save_canvas_data(user_id, canvas_data)
+
+            return jsonify({'message': 'Canvas data saved successfully'})
+        else:
+            return jsonify({'error': 'User not logged in'}), 401
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/load-canvas-data', methods=['GET'])
+def load_canvas_data():
+    try:
+        user_id = session.get('user_id')
+        if user_id:
+            canvas_data_documents = user_db.get_canvas_data_by_user_id(user_id)
+
+            if canvas_data_documents:
+                canvas_data = [data['canvas_data'] for data in canvas_data_documents]
+                return jsonify({'canvasData': canvas_data})
+            else:
+                return jsonify({'canvasData': None})
+        else:
+            return jsonify({'error': 'User not authenticated'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/register', methods=['GET', 'POST'])

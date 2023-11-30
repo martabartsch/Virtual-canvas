@@ -6,6 +6,7 @@ let startY;
 let snapshot;
 let selectedTool = 'Pen';
 let fillColorCheckbox;
+let isLoggedFirst = true;
 const showColumnButton = document.getElementById('show-column-button');
 const canvasListSection = document.querySelector('.side-column');
 colorInput = document.getElementById('color');
@@ -15,10 +16,29 @@ clearButton = document.querySelector('.clear-button');
 let lineWidth = 8;
 const canvasListContainer = document.getElementById('canvas-list-container');
 
+    // Funkcja do ładowania danych canvasa z serwera
+    const loadDataFromServer = () => {
+        fetch('/load-canvas-data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.canvasData) {
+                    // Wczytaj dane do LocalStorage i wyświetl listę płócienek
+                    data.canvasData.forEach((canvasData, index) => {
+                        const canvasKey = `canvasData_${new Date().getTime()}_${index}`;
+                        localStorage.setItem(canvasKey, canvasData);
+                        displayCanvasList();
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error loading canvas data from the server.');
+            });
+    };
+
     const displayCanvasList = () => {
         // Pobierz wszystkie zapisane płótna z LocalStorage
         const savedCanvases = Object.keys(localStorage).filter(key => key.startsWith('canvasData_'));
-        console.log(savedCanvases)
         // Wyświetl listę płócienek
         canvasListContainer.innerHTML = '';
         savedCanvases.forEach((canvasKey, index) => {
@@ -71,7 +91,7 @@ const canvasListContainer = document.getElementById('canvas-list-container');
 
     // Funkcja do zapisywania danych canvasa w LocalStorage
     const saveCanvasDataSaveOnDraft = () => {
-         const currentCanvasData = canvas.toDataURL();
+        const currentCanvasData = canvas.toDataURL();
         const canvasKey = `canvasData_${new Date().getTime()}`;
 
         let canvasName = prompt('Enter canvas name:');
@@ -122,6 +142,11 @@ const canvasListContainer = document.getElementById('canvas-list-container');
                 ctx.fillStyle = 'transparent';
             }
         });
+         if(isLoggedFirst){
+             loadDataFromServer();
+             isLoggedFirst = false;
+         }
+         console.log(isLoggedFirst);
         restoreCanvasDataFromLocal();
         // Funkcja do zapisywania obrazu
         const saveCanvas = () => {
@@ -274,6 +299,37 @@ const canvasListContainer = document.getElementById('canvas-list-container');
         saveCanvasDataToLocal();
     };
 
+    // Przykład funkcji do wysłania danych na serwer przy wylogowywaniu
+    const saveDataToServer = () => {
+        const canvasData = localStorage.getItem('canvasData');
+
+        // Sprawdź, czy canvasData nie jest null
+        if (canvasData !== null) {
+            fetch('/save-canvas-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ canvasData }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error saving canvas data on the server.');
+                }
+                // Jeśli zapisanie danych na serwerze powiedzie się, usuń dane z localStorage
+                localStorage.removeItem('canvasData');
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error saving canvas data on the server.');
+            });
+        } else {
+            // Jeżeli canvasData jest null, możesz podjąć odpowiednie działania lub po prostu zignorować wysyłanie danych
+            console.log('canvasData is null. No data will be sent to the server.');
+        }
+    };
+
     document.getElementById("logout-button").addEventListener("click", function() {
+            saveDataToServer();
             window.location.href = "/logout";
         });
