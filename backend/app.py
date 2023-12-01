@@ -56,13 +56,13 @@ def login_user():
         session.permanent = True
         username = request.form['username']
         password = request.form['password']
+
         success, user_session = user_db.login_user(username, password)
         if success is False:
             return render_template('login.html', error='Username or password is incorrect')
         else:
             user_id = user_session['user_id']
             user = user_db.get_user_by_id(user_id)
-
             # Set canvas_data in the session
             session['user_id'] = user_id
             session['username'] = user['username']
@@ -92,11 +92,10 @@ def save_canvas_data():
     try:
         data = request.json
         canvas_data = data.get('canvasData')
-        print(canvas_data)
-
+        canvas_name = data.get('canvasName')
         if 'user_id' in session:
             user_id = session['user_id']
-            user_db.save_canvas_data(user_id, canvas_data)
+            user_db.save_canvas_data(user_id, canvas_name, canvas_data)
 
             return jsonify({'message': 'Canvas data saved successfully'})
         else:
@@ -114,10 +113,16 @@ def load_canvas_data():
             canvas_data_documents = user_db.get_canvas_data_by_user_id(user_id)
 
             if canvas_data_documents:
-                canvas_data = [data['canvas_data'] for data in canvas_data_documents]
-                return jsonify({'canvasData': canvas_data})
+                canvas_data_list = [
+                    {
+                        'canvasData': data['canvas_data'],
+                        'canvasName': data['canvas_name']
+                    }
+                    for data in canvas_data_documents
+                ]
+                return jsonify({'canvasDataList': canvas_data_list})
             else:
-                return jsonify({'canvasData': None})
+                return jsonify({'canvasDataList': None})
         else:
             return jsonify({'error': 'User not authenticated'}), 401
     except Exception as e:
@@ -131,7 +136,6 @@ def register_user():
         email = request.form.get('email')
         password = request.form.get('password')
         result = user_db.register_user(username, email, password)
-        print(result)
         if result == 'ERROR':
             return render_template('register.html', error='Email already exists')
         else:
