@@ -1,7 +1,7 @@
 from datetime import timedelta
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, UserMixin
 from user.database import UserDatabase
 from dotenv import load_dotenv
@@ -30,7 +30,6 @@ def load_user(user_id):
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
-        print(session)
         if 'user_id' in request.cookies:
             return test(*args, **kwargs)
         else:
@@ -57,13 +56,13 @@ def login_user():
         session.permanent = True
         username = request.form['username']
         password = request.form['password']
+
         success, user_session = user_db.login_user(username, password)
         if success is False:
             return render_template('login.html', error='Username or password is incorrect')
         else:
             user_id = user_session['user_id']
             user = user_db.get_user_by_id(user_id)
-
             # Set canvas_data in the session
             session['user_id'] = user_id
             session['username'] = user['username']
@@ -80,12 +79,54 @@ def login_user():
 @app.route('/logout')
 @login_required
 def logout():
+    logout_user()
     # Wyczyść sesję Flask i dane specyficzne dla użytkownika
     session.pop('user_id', None)
     session.pop('username', None)
-    logout_user()
 
     return redirect(url_for('login_user'))
+
+
+@app.route('/save-canvas-data', methods=['POST'])
+def save_canvas_data():
+    try:
+        data = request.json
+        canvas_data = data.get('canvasData')
+        canvas_name = data.get('canvasName')
+        if 'user_id' in session:
+            user_id = session['user_id']
+            user_db.save_canvas_data(user_id, canvas_name, canvas_data)
+
+            return jsonify({'message': 'Canvas data saved successfully'})
+        else:
+            return jsonify({'error': 'User not logged in'}), 401
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/load-canvas-data', methods=['GET'])
+def load_canvas_data():
+    try:
+        user_id = session.get('user_id')
+        if user_id:
+            canvas_data_documents = user_db.get_canvas_data_by_user_id(user_id)
+
+            if canvas_data_documents:
+                canvas_data_list = [
+                    {
+                        'canvasData': data['canvas_data'],
+                        'canvasName': data['canvas_name']
+                    }
+                    for data in canvas_data_documents
+                ]
+                return jsonify({'canvasDataList': canvas_data_list})
+            else:
+                return jsonify({'canvasDataList': None})
+        else:
+            return jsonify({'error': 'User not authenticated'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -95,7 +136,6 @@ def register_user():
         email = request.form.get('email')
         password = request.form.get('password')
         result = user_db.register_user(username, email, password)
-        print(result)
         if result == 'ERROR':
             return render_template('register.html', error='Email already exists')
         else:
