@@ -2,7 +2,7 @@ from datetime import timedelta
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response, jsonify
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, UserMixin
+from flask_login import LoginManager, login_user, logout_user, current_user
 from user.database import UserDatabase
 from dotenv import load_dotenv
 import os
@@ -80,7 +80,6 @@ def login_user():
 @login_required
 def logout():
     logout_user()
-    # Wyczyść sesję Flask i dane specyficzne dla użytkownika
     session.pop('user_id', None)
     session.pop('username', None)
 
@@ -137,7 +136,7 @@ def register_user():
         password = request.form.get('password')
         result = user_db.register_user(username, email, password)
         if result == 'ERROR':
-            return render_template('register.html', error='Email already exists')
+            return render_template('register.html', error='Email or username already exists')
         else:
             return redirect(url_for('login_user'))
 
@@ -145,4 +144,4 @@ def register_user():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8085)
+    app.run(debug=False, host='0.0.0.0', port=8085)

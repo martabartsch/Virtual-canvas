@@ -1,19 +1,16 @@
 import logging
-
+from os.path import join, dirname
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from flask import session
 
-dotenv_path = '/Users/marta/virtual-canvas/.env'
+dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 
 class UserDatabase:
 
     def __init__(self):
-        # self.mongo_username = os.getenv('MONGO_LOGIN')
-        # self.mongo_password = os.getenv('MONGO_PASSWORD')
-        # self.url = f'mongodb://{self.mongo_username}:{self.mongo_password}@localhost:27017/'
         self.url = "mongodb://localhost:27017"
         self.client = MongoClient(self.url)
         self.db = self.client['users_database']
