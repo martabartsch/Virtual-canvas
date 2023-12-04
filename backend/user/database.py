@@ -1,10 +1,10 @@
 import logging
-
+from os.path import join, dirname
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from flask import session
 
-dotenv_path = '/Users/marta/virtual-canvas/.env'
+dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 

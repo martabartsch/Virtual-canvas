@@ -2,7 +2,7 @@ from datetime import timedelta
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, make_response, jsonify
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, UserMixin
+from flask_login import LoginManager, login_user, logout_user, current_user
 from user.database import UserDatabase
 from dotenv import load_dotenv
 import os
@@ -144,4 +144,4 @@ def register_user():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8085)
+    app.run(debug=False, host='0.0.0.0', port=8085)
