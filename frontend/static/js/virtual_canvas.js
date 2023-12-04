@@ -17,9 +17,8 @@ const canvasListContainer = document.getElementById('canvas-list-container');
 
 // Load from server
 const loadDataFromServer = () => {
-    // Sprawdź, czy dane już zostały wczytane
+    // Check that data is load
     if (localStorage.getItem('dataLoaded')) {
-        // Jeśli tak, to nie wykonuj ponownie żądania
         return;
     }
     fetch('/load-canvas-data')
@@ -83,7 +82,7 @@ const loadCanvasFromLocalStorage = (canvasKey) => {
     }
 };
 
-// Daleate data from localSorage & DRAFT list
+// Delete data from localStorage & DRAFT list
 const deleteCanvas = (canvasKey) => {
     const confirmDelete = confirm('Are you sure you want to delete this canvas?');
 
@@ -172,7 +171,7 @@ window.addEventListener("load", () => {
     saveDraftButton.addEventListener('click', saveDraftCanvas);
     clearButton.addEventListener('click', clearCanvas);
 
-    // Obsługa zmiany narzędzia
+    // Change Tool
     const toolOptions = document.querySelectorAll('.tools-board .options .option');
     toolOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -182,7 +181,7 @@ window.addEventListener("load", () => {
             isDrawing = false;
 
             // Active selecetd tool
-            if (selectedTool === 'Pen' || selectedTool === 'Erase' || selectedTool === 'Circle'|| selectedTool === 'Point'|| selectedTool === 'Rectangle' || selectedTool === 'Line' || selectedTool === 'Arrow') {
+            if (selectedTool === 'Pen' || selectedTool === 'Erase' || selectedTool === 'Circle'|| selectedTool === 'Dot'|| selectedTool === 'Rectangle' || selectedTool === 'Line' || selectedTool === 'Arrow') {
                 canvas.addEventListener("mousedown", startDrawing);
                 canvas.addEventListener("mousemove", draw);
                 saveCanvasDataToLocal();
@@ -283,7 +282,7 @@ const draw = (e) => {
         ctx.globalCompositeOperation = 'source-over';
         [startX, startY] = [e.offsetX, e.offsetY];
 
-    } else if (selectedTool === 'Point') {
+    } else if (selectedTool === 'Dot') {
         drawPoint(e);
 
     } else if (selectedTool === 'Circle') {

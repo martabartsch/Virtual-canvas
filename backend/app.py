@@ -80,7 +80,6 @@ def login_user():
 @login_required
 def logout():
     logout_user()
-    # Wyczyść sesję Flask i dane specyficzne dla użytkownika
     session.pop('user_id', None)
     session.pop('username', None)
 
@@ -137,7 +136,7 @@ def register_user():
         password = request.form.get('password')
         result = user_db.register_user(username, email, password)
         if result == 'ERROR':
-            return render_template('register.html', error='Email already exists')
+            return render_template('register.html', error='Email or username already exists')
         else:
             return redirect(url_for('login_user'))
 
